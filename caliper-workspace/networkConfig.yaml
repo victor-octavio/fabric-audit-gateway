@@ -1,0 +1,44 @@
+# Caliper network configuration. One identity per role:
+#   emergency (Org1) creates records, hospital (Org2) updates them, audit (Org3) only reads.
+name: Telehealth Audit Benchmark
+version: "2.0.0"
+caliper:
+  blockchain: fabric
+channels:
+  - channelName: auditchannel
+    contracts:
+      - id: diagnostic-log
+organizations:
+  - mspid: Org1MSP
+    identities:
+      certificates:
+        - name: emergency
+          clientSignedCert:
+            path: ../network/multi-org/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+          clientPrivateKey:
+            path: ../network/multi-org/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk
+    connectionProfile:
+      path: ./connection-org1.yaml
+      discover: true
+  - mspid: Org2MSP
+    identities:
+      certificates:
+        - name: hospital
+          clientSignedCert:
+            path: ../network/multi-org/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
+          clientPrivateKey:
+            path: ../network/multi-org/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk
+    connectionProfile:
+      path: ./connection-org2.yaml
+      discover: true
+  - mspid: Org3MSP
+    identities:
+      certificates:
+        - name: audit
+          clientSignedCert:
+            path: ../network/multi-org/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp/signcerts/Admin@org3.example.com-cert.pem
+          clientPrivateKey:
+            path: ../network/multi-org/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp/keystore/priv_sk
+    connectionProfile:
+      path: ./connection-org3.yaml
+      discover: true

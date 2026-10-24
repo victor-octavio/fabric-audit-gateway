@@ -1,0 +1,50 @@
+# Baseline rounds: one operation per round, 5 workers.
+# Per-worker transactions = txNumber / workers; see workloads/*.js for how "records" is derived.
+test:
+  name: telehealth-audit-baseline
+  description: Throughput and latency of each chaincode operation
+  workers:
+    number: 5
+  rounds:
+    - label: InsertDiagnostic
+      txNumber: 500
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 50
+      workload:
+        module: workloads/insertDiagnostic.js
+
+    - label: ReadDiagnosis
+      txNumber: 500
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 100
+      workload:
+        module: workloads/readDiagnostic.js
+        arguments:
+          records: 50
+
+    - label: UpdateDiagnostic
+      txNumber: 300 # 60 per worker = 2 updates x 30 records
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 50
+      workload:
+        module: workloads/updateDiagnostic.js
+        arguments:
+          records: 30
+
+    - label: GetHistory
+      txNumber: 200
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 30
+      workload:
+        module: workloads/getHistory.js
+        arguments:
+          records: 20
+

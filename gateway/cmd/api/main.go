@@ -1,38 +1,32 @@
 package main
 
 import (
+	"log"
+
 	"github.com/victor-octavio/telehealth-audit-api/gateway/internal/handlers"
 	"github.com/victor-octavio/telehealth-audit-api/gateway/internal/repositories"
 	"github.com/victor-octavio/telehealth-audit-api/gateway/internal/usecases"
 	"github.com/victor-octavio/telehealth-audit-api/gateway/pkg/fabric"
-	"log"
 )
 
 func main() {
-
-	cfg := fabric.Load()
-	gateway, err := fabric.NewGateway(cfg)
-
+	cfg, err := fabric.LoadMultiOrg()
 	if err != nil {
-		log.Fatalf("Error starting hyperledger fabric connection: %v", err)
+		log.Fatalf("Error loading organizations config: %v", err)
 	}
 
+	gateway, err := fabric.NewMultiGateway(cfg)
+	if err != nil {
+		log.Fatalf("Error starting multi-org hyperledger fabric connection: %v", err)
+	}
 	defer gateway.Close()
-	contract := gateway.Contract()
 
-	repo := repositories.New(repositories.Options{
-		Contract: contract,
-	})
+	repo := repositories.New(repositories.Options{Gateway: gateway})
+	uc := usecases.New(usecases.Options{Repo: repo})
+	h := handlers.New(handlers.Options{UC: uc, OrgNames: gateway.OrgNames()})
 
-	usecases := usecases.New(usecases.Options{
-		Repo: repo,
-	})
-
-	handlers := handlers.New(handlers.Options{
-		UC: usecases,
-	})
-
-	if err := handlers.ListenAndServe(); err != nil {
+	log.Printf("Gateway ready for organizations: %v", gateway.OrgNames())
+	if err := h.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
 }

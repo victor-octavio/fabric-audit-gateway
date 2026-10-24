@@ -1,0 +1,17 @@
+# Connection profile used by Caliper to reach the hospital organization (Org2).
+name: audit-network-org2
+version: "1.0.0"
+client:
+  organization: Org2
+organizations:
+  Org2:
+    mspid: Org2MSP
+    peers:
+      - peer0.org2.example.com
+peers:
+  peer0.org2.example.com:
+    url: grpcs://peer0.org2.example.com:9051
+    tlsCACerts:
+      path: ../network/multi-org/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+    grpcOptions:
+      ssl-target-name-override: peer0.org2.example.com

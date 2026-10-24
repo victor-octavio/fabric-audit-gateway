@@ -1,0 +1,33 @@
+# Organizations the gateway can act as. The caller picks one with the X-Org header.
+# Paths are relative to the gateway/ directory. Peers are reached by their Fabric host name, which must
+# resolve on this machine (see network/multi-org/network.sh hosts).
+organizations:
+  - name: emergency
+    mspID: Org1MSP
+    certPath: ../network/multi-org/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+    keyPath: ../network/multi-org/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk
+    tlsCertPath: ../network/multi-org/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+    peerEndpoint: peer0.org1.example.com:7051
+    gatewayPeer: peer0.org1.example.com
+    channelName: auditchannel
+    chaincodeName: diagnostic-log
+
+  - name: hospital
+    mspID: Org2MSP
+    certPath: ../network/multi-org/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
+    keyPath: ../network/multi-org/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk
+    tlsCertPath: ../network/multi-org/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+    peerEndpoint: peer0.org2.example.com:9051
+    gatewayPeer: peer0.org2.example.com
+    channelName: auditchannel
+    chaincodeName: diagnostic-log
+
+  - name: audit
+    mspID: Org3MSP
+    certPath: ../network/multi-org/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp/signcerts/Admin@org3.example.com-cert.pem
+    keyPath: ../network/multi-org/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp/keystore/priv_sk
+    tlsCertPath: ../network/multi-org/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+    peerEndpoint: peer0.org3.example.com:11051
+    gatewayPeer: peer0.org3.example.com
+    channelName: auditchannel
+    chaincodeName: diagnostic-log

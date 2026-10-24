@@ -1,0 +1,37 @@
+# Scalability rounds: higher load and a mixed emergency-care workload, 10 workers.
+# Caliper fixes the worker count per benchmark file, hence a second file.
+test:
+  name: telehealth-audit-scalability
+  description: Behaviour under increasing load and under a realistic operation mix
+  workers:
+    number: 10
+  rounds:
+    - label: InsertDiagnostic-100tps
+      txNumber: 1000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 100
+      workload:
+        module: workloads/insertDiagnostic.js
+
+    - label: InsertDiagnostic-200tps
+      txNumber: 2000
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 200
+      workload:
+        module: workloads/insertDiagnostic.js
+
+    - label: MixedWorkload
+      txNumber: 1000 # 100 per worker -> 10 updates -> updateRecords >= 5
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 100
+      workload:
+        module: workloads/mixedWorkload.js
+        arguments:
+          readRecords: 20
+          updateRecords: 10

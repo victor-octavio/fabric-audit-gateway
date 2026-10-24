@@ -1,0 +1,26 @@
+# Quick sanity check (about a minute): one small round per workload, 2 workers.
+test:
+  name: telehealth-audit-smoke
+  workers:
+    number: 2
+  rounds:
+    - label: InsertDiagnostic
+      txNumber: 20
+      rateControl: { type: fixed-rate, opts: { tps: 10 } }
+      workload: { module: workloads/insertDiagnostic.js }
+    - label: ReadDiagnosis
+      txNumber: 20
+      rateControl: { type: fixed-rate, opts: { tps: 10 } }
+      workload: { module: workloads/readDiagnostic.js, arguments: { records: 5 } }
+    - label: UpdateDiagnostic
+      txNumber: 20 # 10 per worker = 2 updates x 5 records
+      rateControl: { type: fixed-rate, opts: { tps: 10 } }
+      workload: { module: workloads/updateDiagnostic.js, arguments: { records: 5 } }
+    - label: GetHistory
+      txNumber: 20
+      rateControl: { type: fixed-rate, opts: { tps: 10 } }
+      workload: { module: workloads/getHistory.js, arguments: { records: 3 } }
+    - label: MixedWorkload
+      txNumber: 40 # 20 per worker -> 2 updates
+      rateControl: { type: fixed-rate, opts: { tps: 10 } }
+      workload: { module: workloads/mixedWorkload.js, arguments: { readRecords: 3, updateRecords: 2 } }

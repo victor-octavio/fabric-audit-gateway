@@ -1,0 +1,401 @@
+{
+  "info": {
+    "_postman_id": "0031ccff-f170-4aed-8bc7-0849ffc50189",
+    "name": "Telehealth Audit API",
+    "description": "Collection to test the telehealth audit gateway (multi-org). Every request needs the X-Org header: emergency, hospital or audit.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33625887"
+  },
+  "item": [
+    {
+      "name": "Create diagnosis (emergency)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Org",
+            "value": "emergency",
+            "description": "emergency | hospital | audit"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/diagnosis/insert",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "diagnosis",
+            "insert"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"{{diagnosisId}}\",\n  \"patient_id\": \"pat-001\",\n  \"physician_id\": \"doc-001\",\n  \"diagnosis\": \"Suspected acute myocardial infarction\",\n  \"observation\": \"Patient with severe chest pain, sweating and dyspnea. BP 90/60.\",\n  \"severity\": \"red\",\n  \"attendance_type\": \"ami\",\n  \"location\": \"-23.55052,-46.63331\",\n  \"attachment_hash\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get diagnosis by ID (audit)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Org",
+            "value": "audit",
+            "description": "emergency | hospital | audit"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/diagnosis/record/{{diagnosisId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "diagnosis",
+            "record",
+            "{{diagnosisId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update status -> UNDER_REVIEW (hospital)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "X-Org",
+            "value": "hospital",
+            "description": "emergency | hospital | audit"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/diagnosis/update/{{diagnosisId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "diagnosis",
+            "update",
+            "{{diagnosisId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"new_status\": \"UNDER_REVIEW\",\n  \"diagnosis\": \"AMI confirmed - ECG with ST elevation\",\n  \"observation\": \"Patient referred to hemodynamics. Thrombolytic administered.\",\n  \"severity\": \"orange\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update status -> CLOSED (hospital)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "X-Org",
+            "value": "hospital",
+            "description": "emergency | hospital | audit"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/diagnosis/update/{{diagnosisId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "diagnosis",
+            "update",
+            "{{diagnosisId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"new_status\": \"CLOSED\",\n  \"diagnosis\": \"AMI successfully treated\",\n  \"observation\": \"Discharged after 5 days. No neurological sequelae.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Audit history (audit)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Org",
+            "value": "audit",
+            "description": "emergency | hospital | audit"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/diagnosis/history/{{diagnosisId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "diagnosis",
+            "history",
+            "{{diagnosisId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "--- Expected errors ---",
+      "item": [
+        {
+          "name": "Invalid transition OPEN -> CLOSED (409)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Org",
+                "value": "hospital",
+                "description": "emergency | hospital | audit"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/diagnosis/update/{{diagnosisId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "diagnosis",
+                "update",
+                "{{diagnosisId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_status\": \"CLOSED\",\n  \"diagnosis\": \"Tried to skip UNDER_REVIEW\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Audit cannot write (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Org",
+                "value": "audit",
+                "description": "emergency | hospital | audit"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/diagnosis/insert",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "diagnosis",
+                "insert"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"diag-audit-denied\",\n  \"patient_id\": \"pat-001\",\n  \"physician_id\": \"doc-001\",\n  \"diagnosis\": \"Suspected acute myocardial infarction\",\n  \"observation\": \"Patient with severe chest pain, sweating and dyspnea. BP 90/60.\",\n  \"severity\": \"red\",\n  \"attendance_type\": \"ami\",\n  \"location\": \"-23.55052,-46.63331\",\n  \"attachment_hash\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Emergency cannot update (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Org",
+                "value": "emergency",
+                "description": "emergency | hospital | audit"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/diagnosis/update/{{diagnosisId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "diagnosis",
+                "update",
+                "{{diagnosisId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_status\": \"UNDER_REVIEW\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hospital cannot create (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Org",
+                "value": "hospital",
+                "description": "emergency | hospital | audit"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/diagnosis/insert",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "diagnosis",
+                "insert"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"diag-hospital-denied\",\n  \"patient_id\": \"pat-001\",\n  \"physician_id\": \"doc-001\",\n  \"diagnosis\": \"Suspected acute myocardial infarction\",\n  \"observation\": \"Patient with severe chest pain, sweating and dyspnea. BP 90/60.\",\n  \"severity\": \"red\",\n  \"attendance_type\": \"ami\",\n  \"location\": \"-23.55052,-46.63331\",\n  \"attachment_hash\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid severity (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Org",
+                "value": "emergency",
+                "description": "emergency | hospital | audit"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/diagnosis/insert",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "diagnosis",
+                "insert"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"diag-bad-severity\",\n  \"patient_id\": \"pat-001\",\n  \"physician_id\": \"doc-001\",\n  \"diagnosis\": \"Suspected acute myocardial infarction\",\n  \"observation\": \"Patient with severe chest pain, sweating and dyspnea. BP 90/60.\",\n  \"severity\": \"purple\",\n  \"attendance_type\": \"ami\",\n  \"location\": \"-23.55052,-46.63331\",\n  \"attachment_hash\": \"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unknown organization (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Org",
+                "value": "samu",
+                "description": "emergency | hospital | audit"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/diagnosis/record/{{diagnosisId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "diagnosis",
+                "record",
+                "{{diagnosisId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8090"
+    },
+    {
+      "key": "diagnosisId",
+      "value": "diag-001"
+    }
+  ]
+}

@@ -18,3 +18,21 @@ gateway/.env
 
 # OS
 .DS_Store
+
+# Multi-org network: generated material and artifacts
+network/multi-org/organizations/
+network/multi-org/channel-artifacts/
+network/multi-org/system-genesis-block/
+
+# Caliper
+caliper-workspace/node_modules/
+caliper-workspace/report*.html
+caliper-workspace/caliper.log
+
+# Compiled chaincode binary
+chaincode/diagnostic-logs/fabric-telehealth-audit
+
+# IDE
+.idea/
+network/multi-org/.nodes.env
+caliper-workspace/results/

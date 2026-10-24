@@ -1,0 +1,17 @@
+# Connection profile used by Caliper to reach the emergency organization (Org1).
+name: audit-network-org1
+version: "1.0.0"
+client:
+  organization: Org1
+organizations:
+  Org1:
+    mspid: Org1MSP
+    peers:
+      - peer0.org1.example.com
+peers:
+  peer0.org1.example.com:
+    url: grpcs://peer0.org1.example.com:7051
+    tlsCACerts:
+      path: ../network/multi-org/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.example.com

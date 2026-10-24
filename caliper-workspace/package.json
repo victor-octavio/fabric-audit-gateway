@@ -1,0 +1,19 @@
+{
+  "name": "caliper-workspace",
+  "version": "1.0.0",
+  "description": "Hyperledger Caliper benchmarks for the telehealth audit network",
+  "private": true,
+  "engines": {
+    "node": ">=18.19.0"
+  },
+  "scripts": {
+    "bind": "caliper bind --caliper-bind-sut fabric:fabric-gateway",
+    "benchmark": "./run-benchmark.sh"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.10.3",
+    "@hyperledger/caliper-cli": "0.6.0",
+    "@hyperledger/fabric-gateway": "^1.5.0",
+    "uuid": "^9.0.1"
+  }
+}
