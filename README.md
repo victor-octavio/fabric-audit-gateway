@@ -1,4 +1,4 @@
-# fabric-telehealth-audit
+# fabric-audit-gateway
 
 A Hyperledger Fabric-based prototype for auditability of diagnostic records in emergency telemedicine scenarios.
 
